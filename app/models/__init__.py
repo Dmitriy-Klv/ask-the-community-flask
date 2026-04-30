@@ -1,7 +1,6 @@
 from app.extensions import db
 
-from .response import Response
 from .questions import Question, Statistic
+from .response import Response
 
-
-__all__ = ['Question', 'Statistic', 'Response']
+__all__ = ["Question", "Statistic", "Response"]
