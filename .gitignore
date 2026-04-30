@@ -36,3 +36,4 @@ build/
 # Docker overrides
 docker-compose.override.yml
 /tools/
+/instance/example.db
