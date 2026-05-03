@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
+from sqlalchemy.orm import joinedload
 
 from app.models import Question, db
 from app.schemas.question import QuestionCreate, QuestionResponse
@@ -10,7 +11,7 @@ questions_bp = Blueprint("questions", __name__)
 @questions_bp.route('/', methods=['GET'])
 def get_questions():
     """Retrieve a list of all questions."""
-    questions = Question.query.all()
+    questions = Question.query.options(joinedload(Question.category)).all()
     results = [
         QuestionResponse.model_validate(question, from_attributes=True).model_dump()
         for question in questions
@@ -28,7 +29,7 @@ def create_question():
     except ValidationError as e:
         return jsonify(e.errors()), 400
 
-    new_question = Question(text=question_data.text)
+    new_question = Question(text=question_data.text, category_id=question_data.category_id)
     db.session.add(new_question)
     db.session.commit()
 
@@ -51,9 +52,7 @@ def get_question(id):
 
 @questions_bp.route("/<int:id>", methods=["PUT"])
 def update_question(id):
-    """
-    Update a specific question by its ID.
-    """
+    """Update a specific question by its ID."""
     question = Question.query.get(id)
     if question is None:
         return jsonify({"error": "Question not found"}), 404
@@ -79,9 +78,7 @@ def update_question(id):
 
 @questions_bp.route("/<int:id>", methods=["DELETE"])
 def delete_question(id):
-    """
-    Delete a specific question by its ID.
-    """
+    """Delete a specific question by its ID."""
     question = Question.query.get(id)
 
     if question is None:
