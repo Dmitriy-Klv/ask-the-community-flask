@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 
 from app.models import Question, Response, Statistic, db
 
-response_bp = Blueprint("response", __name__, url_prefix="/responses")
+response_bp = Blueprint("response", __name__)
 
 
 @response_bp.route("/", methods=["GET"])
